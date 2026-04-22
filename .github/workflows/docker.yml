@@ -1,0 +1,35 @@
+name: Build and Push Docker Images
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build & Push Upload Service
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/upload-service ./upload-service
+          docker push ${{ secrets.DOCKER_USERNAME }}/upload-service
+
+      - name: Build & Push Metadata Service
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/metadata-service ./metadata-service
+          docker push ${{ secrets.DOCKER_USERNAME }}/metadata-service
+
+      - name: Build & Push Metadata Worker
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/metadata-worker ./metadata-worker
+          docker push ${{ secrets.DOCKER_USERNAME }}/metadata-worker
